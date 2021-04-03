@@ -49,6 +49,11 @@
   :type 'number
   :group 'company-box-doc)
 
+(defface company-box-doc-face
+  '((t (:inherit font-lock-doc-face)))
+  "The face to apply to the documentation text."
+  :group 'company-box-doc)
+
 (defvar company-box-doc-frame-parameters
   '((internal-border-width . 10))
   "Frame parameters to use on the doc frame.
@@ -98,8 +103,10 @@
 (defun company-box-doc--make-buffer (object)
   (let* ((buffer-list-update-hook nil)
          (inhibit-modification-hooks t)
-         (string (cond ((stringp object) object)
-                       ((bufferp object) (with-current-buffer object (buffer-string))))))
+         (string (propertize
+                  (cond ((stringp object) object)
+                        ((bufferp object) (with-current-buffer object (buffer-string))))
+                  'face 'company-box-doc-face)))
     (when (and string (> (length (string-trim string)) 0))
       (with-current-buffer (company-box--get-buffer "doc")
         (erase-buffer)
